@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contains database credentials)
+.env
+.env.local
+.env.*.local
+
+# Claude Code local data
+.claude/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build output
+.next/
+out/
+dist/
+
+# Debug
+npm-debug.log*
