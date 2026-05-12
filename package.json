@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "license": "MIT",
   "description": "6-month Agent Engineer learning journal — powered by VitePress",
   "scripts": {
     "docs:dev": "vitepress dev",
