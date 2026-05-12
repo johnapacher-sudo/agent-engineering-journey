@@ -1,0 +1,22 @@
+{
+  "name": "agent-engineering-journey-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "6-month Agent Engineer learning journal — powered by VitePress",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.5.0"
+  },
+  "dependencies": {
+    "@types/node": "^25.6.2",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
+  }
+}

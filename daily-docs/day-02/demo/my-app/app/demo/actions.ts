@@ -3,24 +3,24 @@
 import { revalidatePath } from 'next/cache';
 
 import {
-  createUser,
-  createPost,
-  createTag,
-  createTip,
-  createPostsTags,
+  createUser as createUserQuery,
+  createPost as createPostQuery,
+  createTag as createTagQuery,
+  createTip as createTipQuery,
+  createPostsTags as createPostsTagsQuery,
 } from '@/db/queries/insert';
 import {
-  updateUser,
-  updatePost,
-  updateTag,
-  updateTip,
+  updateUser as updateUserQuery,
+  updatePost as updatePostQuery,
+  updateTag as updateTagQuery,
+  updateTip as updateTipQuery,
 } from '@/db/queries/update';
 import {
-  deleteUser,
-  deletePost,
-  deleteTag,
-  deleteTip,
-  deletePostsTags,
+  deleteUser as deleteUserQuery,
+  deletePost as deletePostQuery,
+  deleteTag as deleteTagQuery,
+  deleteTip as deleteTipQuery,
+  deletePostsTags as deletePostsTagsQuery,
 } from '@/db/queries/delete';
 
 const REVALIDATE_PATH = '/demo';
@@ -44,7 +44,7 @@ export async function createUserAction(formData: FormData) {
   const age = readNum(formData, 'age');
   const email = readStr(formData, 'email');
   if (!name || age === undefined || !email) return;
-  await createUser({ name, age, email });
+  await createUserQuery({ name, age, email });
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -59,14 +59,14 @@ export async function updateUserAction(formData: FormData) {
   if (age !== undefined) data.age = age;
   if (email !== undefined) data.email = email;
   if (Object.keys(data).length === 0) return;
-  await updateUser(id, data);
+  await updateUserQuery(id, data);
   revalidatePath(REVALIDATE_PATH);
 }
 
 export async function deleteUserAction(formData: FormData) {
   const id = readNum(formData, 'id');
   if (id === undefined) return;
-  await deleteUser(id);
+  await deleteUserQuery(id);
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -75,7 +75,7 @@ export async function createPostAction(formData: FormData) {
   const content = readStr(formData, 'content');
   const userId = readNum(formData, 'userId');
   if (!title || !content || userId === undefined) return;
-  await createPost({ title, content, userId });
+  await createPostQuery({ title, content, userId });
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -90,14 +90,14 @@ export async function updatePostAction(formData: FormData) {
   if (content !== undefined) data.content = content;
   if (userId !== undefined) data.userId = userId;
   if (Object.keys(data).length === 0) return;
-  await updatePost(id, data);
+  await updatePostQuery(id, data);
   revalidatePath(REVALIDATE_PATH);
 }
 
 export async function deletePostAction(formData: FormData) {
   const id = readNum(formData, 'id');
   if (id === undefined) return;
-  await deletePost(id);
+  await deletePostQuery(id);
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -105,7 +105,7 @@ export async function createTagAction(formData: FormData) {
   const content = readStr(formData, 'content');
   const userId = readNum(formData, 'userId');
   if (!content || userId === undefined) return;
-  await createTag({ content, userId });
+  await createTagQuery({ content, userId });
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -118,14 +118,14 @@ export async function updateTagAction(formData: FormData) {
   if (content !== undefined) data.content = content;
   if (userId !== undefined) data.userId = userId;
   if (Object.keys(data).length === 0) return;
-  await updateTag(id, data);
+  await updateTagQuery(id, data);
   revalidatePath(REVALIDATE_PATH);
 }
 
 export async function deleteTagAction(formData: FormData) {
   const id = readNum(formData, 'id');
   if (id === undefined) return;
-  await deleteTag(id);
+  await deleteTagQuery(id);
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -133,7 +133,7 @@ export async function createTipAction(formData: FormData) {
   const content = readStr(formData, 'content');
   const tagId = readNum(formData, 'tagId');
   if (!content || tagId === undefined) return;
-  await createTip({ content, tagId });
+  await createTipQuery({ content, tagId });
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -146,14 +146,14 @@ export async function updateTipAction(formData: FormData) {
   if (content !== undefined) data.content = content;
   if (tagId !== undefined) data.tagId = tagId;
   if (Object.keys(data).length === 0) return;
-  await updateTip(id, data);
+  await updateTipQuery(id, data);
   revalidatePath(REVALIDATE_PATH);
 }
 
 export async function deleteTipAction(formData: FormData) {
   const id = readNum(formData, 'id');
   if (id === undefined) return;
-  await deleteTip(id);
+  await deleteTipQuery(id);
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -161,7 +161,7 @@ export async function createPostsTagsAction(formData: FormData) {
   const postId = readNum(formData, 'postId');
   const tagId = readNum(formData, 'tagId');
   if (postId === undefined || tagId === undefined) return;
-  await createPostsTags({ postId, tagId });
+  await createPostsTagsQuery({ postId, tagId });
   revalidatePath(REVALIDATE_PATH);
 }
 
@@ -169,6 +169,59 @@ export async function deletePostsTagsAction(formData: FormData) {
   const postId = readNum(formData, 'postId');
   const tagId = readNum(formData, 'tagId');
   if (postId === undefined || tagId === undefined) return;
-  await deletePostsTags(postId, tagId);
+  await deletePostsTagsQuery(postId, tagId);
+  revalidatePath(REVALIDATE_PATH);
+}
+
+export type CreateUserInput = {
+  name: string;
+  age: number;
+  email: string;
+};
+
+export type UpdateUserInput = {
+  id: number;
+  name?: string;
+  age?: number;
+  email?: string;
+};
+
+export type DeleteUserInput = {
+  id: number;
+};
+
+export async function createUser(input: CreateUserInput) {
+  if (!input.name?.trim()) throw new Error('name 不能为空');
+  if (!input.email?.trim()) throw new Error('email 不能为空');
+  if (!Number.isFinite(input.age)) throw new Error('age 必须是数字');
+  await createUserQuery({
+    name: input.name.trim(),
+    age: input.age,
+    email: input.email.trim(),
+  });
+  revalidatePath(REVALIDATE_PATH);
+}
+
+export async function updateUser(input: UpdateUserInput) {
+  if (!Number.isFinite(input.id)) throw new Error('id 必须是数字');
+  const data: { name?: string; age?: number; email?: string } = {};
+  if (input.name !== undefined && input.name.trim() !== '') {
+    data.name = input.name.trim();
+  }
+  if (input.age !== undefined) {
+    if (!Number.isFinite(input.age)) throw new Error('age 必须是数字');
+    data.age = input.age;
+  }
+  if (input.email !== undefined && input.email.trim() !== '') {
+    data.email = input.email.trim();
+  }
+  if (Object.keys(data).length === 0) throw new Error('至少填写一个要修改的字段');
+  await updateUserQuery(input.id, data);
+  revalidatePath(REVALIDATE_PATH);
+}
+
+export async function deleteUser(input: DeleteUserInput) {
+  if (!Number.isFinite(input.id)) throw new Error('id 必须是数字');
+  await deleteUserQuery(input.id);
   revalidatePath(REVALIDATE_PATH);
 }

@@ -17,10 +17,9 @@ import {
   getUserWithPosts,
 } from '@/db/queries/select';
 
+import { UserCrud } from '@/components/UserCrud';
+
 import {
-  createUserAction,
-  updateUserAction,
-  deleteUserAction,
   createPostAction,
   updatePostAction,
   deletePostAction,
@@ -546,85 +545,7 @@ export default async function DemoPage({
         title="⑤ CRUD 操作（Server Actions）"
         hint="表单 action 绑定 'use server' 函数；执行后 revalidatePath('/demo') 刷新列表。"
       >
-        <SubCard title="users — create / update / delete">
-          <form
-            action={createUserAction}
-            className="grid grid-cols-1 gap-2 sm:grid-cols-4"
-          >
-            <input
-              name="name"
-              required
-              placeholder="name"
-              className={inputCls}
-            />
-            <input
-              name="age"
-              type="number"
-              required
-              placeholder="age"
-              className={inputCls}
-            />
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="email"
-              className={inputCls}
-            />
-            <button type="submit" className={btnCls}>
-              createUser
-            </button>
-          </form>
-
-          <form
-            action={updateUserAction}
-            className="grid grid-cols-1 gap-2 sm:grid-cols-5"
-          >
-            <input
-              name="id"
-              type="number"
-              required
-              placeholder="id"
-              className={inputCls}
-            />
-            <input name="name" placeholder="name (可选)" className={inputCls} />
-            <input
-              name="age"
-              type="number"
-              placeholder="age (可选)"
-              className={inputCls}
-            />
-            <input
-              name="email"
-              type="email"
-              placeholder="email (可选)"
-              className={inputCls}
-            />
-            <button type="submit" className={btnCls}>
-              updateUser
-            </button>
-          </form>
-
-          <form
-            action={deleteUserAction}
-            className="grid grid-cols-1 gap-2 sm:grid-cols-4"
-          >
-            <input
-              name="id"
-              type="number"
-              required
-              placeholder="id"
-              className={inputCls}
-            />
-            <button type="submit" className={btnDangerCls}>
-              deleteUser
-            </button>
-          </form>
-          <p className="text-xs text-zinc-500">
-            提示：删除 user 会因 <code>onDelete: &apos;cascade&apos;</code>{' '}
-            级联删除其 posts / tags / tips / posts_tags。
-          </p>
-        </SubCard>
+        <UserCrud />
 
         <SubCard title="posts — create / update / delete">
           <form

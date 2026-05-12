@@ -1,0 +1,1 @@
+ALTER TABLE "posts_table_2" ALTER COLUMN "user_id" SET NOT NULL;

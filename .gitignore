@@ -23,5 +23,9 @@ node_modules/
 out/
 dist/
 
+# VitePress
+.vitepress/cache/
+.vitepress/dist/
+
 # Debug
 npm-debug.log*
