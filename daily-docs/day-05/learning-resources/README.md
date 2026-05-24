@@ -8,7 +8,9 @@
 2. [02-Serverless 颠覆传统后端概念](./02-serverless-changes-everything.md) — 进程假设被抽掉后的六大崩塌点、Inngest/AI SDK/Streaming 的应对
 3. [03-neon-http vs neon-serverless 对比](./03-neon-http-vs-serverless.md) — 交互式 vs 非交互式事务、代码组织方案、判断标准
 4. [04-App Router API 路由](./04-app-router-api-routes.md) — route.ts 约定规则、URL 路径映射、动态路由、HTTP 方法、Edge Runtime、与 Pages Router 对比
-4. [04-Neon Serverless Driver 底层优化](./04-neon-serverless-driver-internals.md) — 连接 9 步拆解、TLS 1.2 vs 1.3、加密下沉、SCRAM 认证取舍、消息 Pipelining
+5. [04-Neon Serverless Driver 底层优化](./04-neon-serverless-driver-internals.md) — 连接 9 步拆解、TLS 1.2 vs 1.3、加密下沉、SCRAM 认证取舍、消息 Pipelining
+6. [05-Edge Runtime 兼容性、Migration、查询优化](./05-edge-runtime-migration-queries.md) — Edge 白名单、PgBouncer transaction mode 失败机制、neon-http 多次查询优化
+7. [06-Day 5 自检题校验记录](./06-day5-self-check.md) — 连接池爆炸机制、pooled/unpooled 反用后果、@vercel/postgres 与 neon-http 关系
 
 ---
 
@@ -53,3 +55,20 @@
 21. **SCRAM 故意慢（~100ms CPU）防暴力破解**：在 Serverless（10ms CPU 预算）里跑不完；Neon 用随机密码替代"算得慢"的防护策略
 22. **Pipelining 把三条消息打包一次发**：startup + 密码 + 查询不用等回复，直接一股脑发出去，省 2 轮
 23. **最终 9 → 4 轮**：TLS 1.3(-1) + 加密下沉(-1) + 去 SCRAM(-1) + Pipelining(-2)
+
+### Edge Runtime 兼容性
+24. **Edge Runtime 是 V8 + Web API + 少量 Node.js polyfill**：不是阉割版 Node.js，是完全不同的运行时
+25. **`net`/`tls`/`fs` 在 Edge 不可用**：基于这些模块的驱动（postgres-js、pg）在 `next build` 阶段就报错
+26. **选 Edge → 必须用 `fetch`/`WebSocket` 驱动**：`@neondatabase/serverless` 两种模式都支持
+
+### Migration 失败机制
+27. **PgBouncer transaction mode 每次事务之间可能换连接**：auto-commit 语句之间不保证同一个底层 PG 连接
+28. **Advisory lock 绑定连接不绑定用户**：换了连接，锁就丢了，防并发的 migration 互相冲突
+29. **SET 参数在连接还回池时被重置**：`statement_timeout` 等保护性参数失效
+30. **简单 migration 大部分能跑通**：出问题的是多步、跨事务、有会话状态的复杂场景
+
+### 查询优化
+31. **neon-http 下 3 次 `db.select()` = 3 个 HTTP 请求**：每次 await 都是独立 fetch
+32. **`db.transaction()` 把多次查询压成 1 个请求**：neon-http 下 tx.await 只缓存 SQL，callback 结束后一次性打包
+33. **`Promise.all` 并行发 3 个请求**：请求数不变，但时间从 3T 降到 ~T
+34. **大多数场景 `db.transaction()` 包一下就够**：不改 SQL 逻辑，省网络开销
