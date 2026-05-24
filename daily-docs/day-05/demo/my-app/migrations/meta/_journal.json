@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1779610739420,
+      "tag": "0000_graceful_squadron_supreme",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779611246324,
+      "tag": "0001_rapid_mathemanic",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779611953984,
+      "tag": "0002_last_grim_reaper",
+      "breakpoints": true
+    }
+  ]
+}
